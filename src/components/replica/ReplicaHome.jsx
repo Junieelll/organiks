@@ -22,6 +22,8 @@ import {
 
 export default function ReplicaHome() {
   const [selectedService, setSelectedService] = useState(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const videoRef = useRef(null);
   const carouselRef = useRef(null);
   const swipeStartX = useRef(null);
   const [cardWidth, setCardWidth] = useState(380);
@@ -178,6 +180,13 @@ export default function ReplicaHome() {
     return () => window.removeEventListener('resize', measure);
   }, []);
 
+  // Set video loaded if already cached/playing on mount
+  useEffect(() => {
+    if (videoRef.current && videoRef.current.readyState >= 3) {
+      setIsVideoLoaded(true);
+    }
+  }, []);
+
   // Infinite loop: after spring settles on a clone, silently snap to real card
   useEffect(() => {
     if (snap) {
@@ -224,16 +233,33 @@ export default function ReplicaHome() {
       {/* 1. Hero Section — Full Screen Modern Sanctuary Layout */}
       <section
         id="home"
-        className="relative min-h-[100dvh] flex items-center overflow-hidden text-[#FBF4E4]"
+        className="relative min-h-[100dvh] flex items-center overflow-hidden text-[#FBF4E4] bg-[#14291F]"
       >
-        {/* Fullscreen Background Video */}
+        {/* Exact First-Frame Poster (renders immediately while video buffers, zero pop) */}
+        <picture>
+          <source srcSet="/images/replica/hero-poster.webp" type="image/webp" />
+          <img
+            src="/images/replica/hero-poster.jpg"
+            alt="Organiks Aesthetic Sanctuary"
+            className="absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none select-none"
+            loading="eager"
+            fetchPriority="high"
+          />
+        </picture>
+
+        {/* Fullscreen Background Video with smooth crossfade */}
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover scale-105"
-          poster="/images/hero/hero-main.jpg"
+          preload="auto"
+          onPlaying={() => setIsVideoLoaded(true)}
+          onLoadedData={() => setIsVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover scale-105 transition-opacity duration-1000 ease-out ${
+            isVideoLoaded ? "opacity-100" : "opacity-0"
+          }`}
         >
           <source src="/images/replica/hero.mp4" type="video/mp4" />
         </video>
@@ -573,7 +599,7 @@ export default function ReplicaHome() {
                 />
 
                 {/* Scrim: Lowered so top ~76% of the image is completely unobscured */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 via-24% to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 via-5% to-transparent pointer-events-none" />
 
                 {/* Category Pill — top-left */}
                 <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md shadow-sm border border-white/10">
