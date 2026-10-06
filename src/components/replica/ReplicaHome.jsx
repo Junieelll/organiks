@@ -172,7 +172,12 @@ export default function ReplicaHome() {
       if (carouselRef.current) {
         const w = carouselRef.current.offsetWidth;
         setContainerWidth(w);
-        setCardWidth(Math.min(Math.floor(w * 0.55), 420));
+        if (w < 640) {
+          // On mobile, card takes ~82% of width so text is comfortable, legible, and side cards peek gently
+          setCardWidth(Math.min(Math.floor(w * 0.82), 360));
+        } else {
+          setCardWidth(Math.min(Math.floor(w * 0.55), 420));
+        }
       }
     };
     measure();
@@ -650,34 +655,43 @@ export default function ReplicaHome() {
       </section>
 
       {/* 5. Banner Section: "Your glow starts with one message" */}
-      <section className="py-10 bg-[#FEFBF7]">
-        <div className="max-w-[1000px] mx-auto px-6">
-          <div className="relative min-h-[380px] rounded-lg overflow-hidden flex items-center shadow-md bg-[#FAF3E8]">
-            {/* Background Image */}
+      <section className="py-8 sm:py-10 bg-[#FEFBF7]">
+        <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
+          <div className="relative rounded-2xl overflow-hidden shadow-sm border border-[#E8DDD2]/60 bg-[#FAF3E8] flex flex-col md:flex-row md:items-center min-h-0 md:min-h-[380px]">
+            {/* Mobile: Dedicated Image zoomed tightly and focused on the client and consultant */}
+            <div className="md:hidden relative w-full h-[240px] sm:h-[280px] overflow-hidden">
+              <img
+                src="/images/replica/banner.png"
+                alt="Organiks Spa Experience"
+                className="w-full h-full object-cover object-[94%_32%] scale-[1.45] origin-[92%_32%]"
+              />
+            </div>
+
+            {/* Desktop: Full-bleed background image with smooth horizontal gradient */}
             <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('/images/replica/banner.png  ')` }}
+              className="hidden md:block absolute inset-0 bg-cover bg-[position:center_right] lg:bg-center"
+              style={{ backgroundImage: `url('/images/replica/banner.png')` }}
             />
+            <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-[#FAF3E8] via-[#FAF3E8]/85 via-40% to-transparent pointer-events-none" />
 
-
-            {/* Text Overlay */}
-            <div className="relative z-10 p-8 sm:p-12 max-w-[430px] text-left">
-              <div className="mb-6">
+            {/* Text Content */}
+            <div className="relative z-10 p-6 sm:p-8 md:p-12 max-w-[460px] text-left">
+              <div className="mb-4 sm:mb-6">
                 <img
                   src="/images/logo.webp"
                   alt="Organiks"
-                  className="h-25 w-auto object-contain"
+                  className="h-14 sm:h-18 w-auto object-contain"
                 />
               </div>
 
               <h2
-                className="text-[clamp(28px,3.8vw,42px)] text-[#3B4A2B] leading-[1.1] font-medium m-0"
+                className="text-[25px] sm:text-[30px] md:text-[clamp(28px,3.5vw,40px)] text-[#2C3820] leading-[1.18] font-medium m-0 tracking-tight"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                Your glow starts with <em className="italic">one</em> message.
+                Your glow starts with <em className="italic font-normal">one</em> message.
               </h2>
 
-              <p className="text-[12.5px] text-[#444] my-5 leading-relaxed">
+              <p className="text-[13px] sm:text-[13.5px] text-[#4A4E44] my-3.5 sm:my-5 leading-relaxed font-light">
                 Tell us your beauty or wellness goal and our team will recommend
                 the best Organiks ritual for you.
               </p>
@@ -686,7 +700,7 @@ export default function ReplicaHome() {
                 href={BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[#6B7F4E] hover:bg-[#5b6d42] text-white rounded-full py-2.5 px-7 text-[11px] font-semibold tracking-[0.14em] uppercase no-underline shadow-sm transition-colors"
+                className="inline-flex items-center gap-2 bg-[#5B6F43] hover:bg-[#4E6037] text-white rounded-full py-2.5 sm:py-3 px-6 sm:px-7 text-[11px] font-semibold tracking-[0.14em] uppercase no-underline shadow-sm transition-colors cursor-pointer"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -727,8 +741,12 @@ export default function ReplicaHome() {
             ref={carouselRef}
             className="relative overflow-hidden py-6"
             style={{
-              maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+              maskImage: containerWidth < 640
+                ? 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)'
+                : 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+              WebkitMaskImage: containerWidth < 640
+                ? 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)'
+                : 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
             }}
             onPointerDown={(e) => { swipeStartX.current = e.clientX; }}
             onPointerUp={(e) => {
@@ -762,7 +780,7 @@ export default function ReplicaHome() {
                     }}
                     whileHover={isActive ? { y: -5 } : { opacity: 0.65, scale: 0.94 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    className="shrink-0 bg-white rounded-2xl p-7 sm:p-8 border border-[#E8DDD2]/60 cursor-pointer select-none"
+                    className="shrink-0 bg-white rounded-2xl p-5 sm:p-8 border border-[#E8DDD2]/60 cursor-pointer select-none"
                     style={{
                       width: cardWidth,
                       boxShadow: isActive
@@ -770,18 +788,20 @@ export default function ReplicaHome() {
                         : '0 2px 12px rgba(44,39,35,0.06)',
                     }}
                   >
-                    <HugeiconsIcon icon={QuoteDownIcon} size={26} color="#B8975A" strokeWidth={1.5} className="mb-3 opacity-50" />
-                    <div className="text-[#F5B50A] tracking-[3px] text-xs mb-3" aria-label="5 stars">★★★★★</div>
+                    <HugeiconsIcon icon={QuoteDownIcon} size={24} color="#B8975A" strokeWidth={1.5} className="mb-2 sm:mb-3 opacity-50" />
+                    <div className="text-[#F5B50A] tracking-[3px] text-xs mb-2.5 sm:mb-3" aria-label="5 stars">★★★★★</div>
                     <p
-                      className="text-[#333] leading-relaxed font-light mb-6"
+                      className="text-[#333] leading-relaxed font-light mb-5 sm:mb-6"
                       style={{
                         fontFamily: 'var(--font-heading)',
-                        fontSize: isActive ? '1.0625rem' : '0.9rem',
+                        fontSize: isActive
+                          ? (containerWidth < 640 ? '0.975rem' : '1.0625rem')
+                          : (containerWidth < 640 ? '0.85rem' : '0.9rem'),
                       }}
                     >
                       &ldquo;{review.quote}&rdquo;
                     </p>
-                    <div className="flex items-center gap-3 border-t border-[#E8DDD2]/50 pt-4">
+                    <div className="flex items-center gap-3 border-t border-[#E8DDD2]/50 pt-3.5 sm:pt-4">
                       <ReviewAvatar review={review} size={isActive ? 'md' : 'sm'} />
                       <div>
                         <p className="text-sm font-semibold text-[#222]">{review.author}</p>
