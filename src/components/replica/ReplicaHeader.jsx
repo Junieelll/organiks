@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 import { BOOKING_URL } from '../../constants/config'
+import { usePageTransition } from './PageTransition'
 
 export default function ReplicaHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { go } = usePageTransition()
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,26 +19,61 @@ export default function ReplicaHeader() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [location.pathname])
+
   const navLinks = [
-    { label: 'Home', href: '#home' },
-    { label: 'Services', href: '#services' },
-    { label: 'About Organiks', href: '#about' },
-    { label: 'Location', href: '#location' },
+    { label: 'Home',           href: '/',          anchor: '#home',     type: 'home' },
+    { label: 'Services',       href: '/services',  anchor: null,        type: 'route' },
+    { label: 'About Organiks', href: '/about',          anchor: null,    type: 'route' },
+    { label: 'Location',       href: '/location',  anchor: null,        type: 'route' },
   ]
 
-  const handleLinkClick = (e, href) => {
+  const handleLinkClick = (e, link) => {
     e.preventDefault()
     setMenuOpen(false)
-    const target = document.querySelector(href)
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' })
+
+    const onHome = location.pathname === '/'
+
+    // Page links: the curtain handles the route change and the scroll reset,
+    // so the old page never visibly scrolls to the top before changing.
+    if (link.type === 'route') {
+      if (location.pathname === link.href) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        go(link.href)
+      }
+      return
+    }
+
+    if (link.type === 'home') {
+      if (onHome) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        go('/')
+      }
+      return
+    }
+
+    // Section links (About, Location): smooth scroll if already on Home,
+    // otherwise change page and land directly on the section.
+    if (onHome) {
+      document.querySelector(link.anchor)?.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      go('/', { anchor: link.anchor })
     }
   }
+
+  // Only the Home hero is dark enough for the transparent header,
+  // so every other page (Services, About, ...) gets the solid style
+  const solidHeader = scrolled || location.pathname !== '/'
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
+        solidHeader
           ? 'bg-[#F4EEE3]/95 backdrop-blur-md shadow-sm border-b border-[#E6D9C2]/60'
           : 'bg-gradient-to-b from-black/70 via-black/30 to-transparent'
       }`}
@@ -42,15 +81,15 @@ export default function ReplicaHeader() {
       <div className="max-w-[1280px] mx-auto px-6 h-16 sm:h-20 flex items-center justify-between transition-all duration-300">
         {/* Logo */}
         <a
-          href="#home"
-          onClick={(e) => handleLinkClick(e, '#home')}
+          href="/"
+          onClick={(e) => handleLinkClick(e, { type: 'home', anchor: '#home' })}
           className="flex flex-col items-center leading-none text-[#566B3F] no-underline group select-none"
         >
           <img
             src="/images/logo.webp"
             alt="Organiks Salon and Wellness Spa"
             className={`h-14 sm:h-16 w-auto object-contain transition-all duration-300 group-hover:scale-105 ${
-              scrolled
+              solidHeader
                 ? ''
                 : 'brightness-0 invert drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]'
             }`}
@@ -62,7 +101,7 @@ export default function ReplicaHeader() {
           <div style={{ display: 'none' }} className="flex-col items-center">
             <b
               className={`text-[22px] font-medium tracking-[0.06em] ${
-                scrolled ? 'text-[#566B3F]' : 'text-white'
+                solidHeader ? 'text-[#566B3F]' : 'text-white'
               }`}
               style={{ fontFamily: 'var(--font-heading)' }}
             >
@@ -80,29 +119,42 @@ export default function ReplicaHeader() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-7">
           <ul className="flex items-center gap-7 list-none m-0 p-0">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={(e) => handleLinkClick(e, link.href)}
-                  className={`text-[13px] tracking-[0.03em] transition-colors no-underline font-medium ${
-                    scrolled
-                      ? 'text-[#222] hover:text-[#566B3F]'
-                      : 'text-white/90 hover:text-white drop-shadow-sm'
-                  }`}
-                  style={{ fontFamily: 'var(--font-poppins)' }}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive =
+                link.type === 'route'
+                  ? location.pathname === link.href
+                  : link.type === 'home'
+                  ? location.pathname === '/'
+                  : false
+
+              return (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => handleLinkClick(e, link)}
+                    className={`text-[13px] tracking-[0.03em] transition-colors no-underline font-medium ${
+                      solidHeader
+                        ? isActive
+                          ? 'text-[#566B3F] font-semibold'
+                          : 'text-[#222] hover:text-[#566B3F]'
+                        : isActive
+                        ? 'text-white font-semibold'
+                        : 'text-white/90 hover:text-white drop-shadow-sm'
+                    }`}
+                    style={{ fontFamily: 'var(--font-poppins)' }}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              )
+            })}
             <li>
               <a
                 href={BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-block px-5 py-2 rounded-full text-[12.5px] font-medium transition-all no-underline shadow-sm ${
-                  scrolled
+                  solidHeader
                     ? 'bg-[#14291F] hover:bg-[#1E3D2D] text-[#F4EEE3]'
                     : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30'
                 }`}
@@ -126,20 +178,20 @@ export default function ReplicaHeader() {
             animate={menuOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className={`w-6 h-[2px] rounded-full transition-colors ${
-              scrolled ? 'bg-[#222]' : 'bg-white'
+              solidHeader ? 'bg-[#222]' : 'bg-white'
             }`}
           />
           <motion.span
             animate={menuOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className={`w-6 h-[2px] rounded-full transition-colors ${
-              scrolled ? 'bg-[#222]' : 'bg-white'
+              solidHeader ? 'bg-[#222]' : 'bg-white'
             }`}
           />
         </motion.button>
       </div>
 
-      {/* Mobile Drawer Menu with Framer Motion Animation */}
+      {/* Mobile Drawer Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.nav
@@ -161,7 +213,7 @@ export default function ReplicaHeader() {
             >
               {navLinks.map((link) => (
                 <motion.li
-                  key={link.href}
+                  key={link.label}
                   variants={{
                     open: { opacity: 1, y: 0 },
                     closed: { opacity: 0, y: -8 },
@@ -169,8 +221,13 @@ export default function ReplicaHeader() {
                 >
                   <a
                     href={link.href}
-                    onClick={(e) => handleLinkClick(e, link.href)}
-                    className="block text-base font-medium tracking-[0.02em] text-[#222] hover:text-[#566B3F] py-1.5 transition-colors no-underline"
+                    onClick={(e) => handleLinkClick(e, link)}
+                    className={`block text-base font-medium tracking-[0.02em] py-1.5 transition-colors no-underline ${
+                      (link.type === 'route' && location.pathname === link.href) ||
+                      (link.type === 'home' && location.pathname === '/')
+                        ? 'text-[#566B3F] font-semibold'
+                        : 'text-[#222] hover:text-[#566B3F]'
+                    }`}
                     style={{ fontFamily: 'var(--font-poppins)' }}
                   >
                     {link.label}

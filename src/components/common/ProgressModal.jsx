@@ -72,21 +72,37 @@ const phaseItemVariants = {
 };
 
 export default function ProgressModal({ onClose }) {
-  const total = phases.length;
-  const completed = phases.filter((p) => p.done).length;
-  const percent = Math.round((completed / total) * 100);
+  // Calculate progress from individual tasks
+  const totalItems = phases.reduce(
+    (total, phase) => total + phase.items.length,
+    0
+  );
+
+  const completedItems = phases.reduce(
+    (total, phase) =>
+      total + phase.items.filter((item) => item.done).length,
+    0
+  );
+
+  const percent = Math.round((completedItems / totalItems) * 100);
+
+  // Number of fully completed phases
+  const completedPhases = phases.filter((phase) =>
+    phase.items.every((item) => item.done)
+  ).length;
 
   // Close on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
+
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
   return (
-    /* Backdrop */
     <motion.div
       id="progress-modal-overlay"
       variants={backdropVariants}
@@ -109,7 +125,7 @@ export default function ProgressModal({ onClose }) {
           fontFamily: "var(--font-body)",
         }}
       >
-        {/* ── Header (never scrolls) ── */}
+        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 bg-brand-primary shrink-0">
           <div>
             <motion.p
@@ -120,6 +136,7 @@ export default function ProgressModal({ onClose }) {
             >
               Website Development
             </motion.p>
+
             <motion.h3
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
@@ -130,6 +147,7 @@ export default function ProgressModal({ onClose }) {
               Organiks Progress
             </motion.h3>
           </div>
+
           <motion.button
             id="progress-modal-close"
             onClick={onClose}
@@ -143,12 +161,13 @@ export default function ProgressModal({ onClose }) {
           </motion.button>
         </div>
 
-        {/* ── Progress bar (never scrolls) ── */}
+        {/* Progress */}
         <div className="px-5 py-4 border-b border-brand-accent shrink-0">
           <div className="flex items-baseline justify-between mb-1.5">
             <span className="text-[0.72rem] font-semibold text-brand-muted">
               Overall Progress
             </span>
+
             <motion.span
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -158,6 +177,7 @@ export default function ProgressModal({ onClose }) {
               {percent}%
             </motion.span>
           </div>
+
           <div className="h-[7px] rounded-full bg-brand-accent overflow-hidden">
             <motion.div
               className="h-full rounded-full"
@@ -169,110 +189,140 @@ export default function ProgressModal({ onClose }) {
                 ease: [0.16, 1, 0.3, 1],
               }}
               style={{
-                background: "linear-gradient(90deg, #8B5E3C, #C9A98A)",
+                background:
+                  "linear-gradient(90deg, #8B5E3C, #C9A98A)",
               }}
             />
           </div>
+
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.4 }}
             className="text-[0.68rem] font-semibold text-brand-secondary mt-1"
           >
-            {completed} of {total} phases complete
+            {completedItems} of {totalItems} tasks complete
           </motion.p>
         </div>
 
-        {/* ── Phases list — flex-1 + min-h-0 makes overflow-y-auto actually scroll ── */}
+        {/* Phases */}
         <motion.div
           variants={listContainerVariants}
           initial="hidden"
           animate="visible"
           className="flex-1 min-h-0 flex flex-col gap-3 p-4 overflow-y-auto"
         >
-          {phases.map((phase, i) => (
-            <motion.div
-              key={i}
-              variants={phaseItemVariants}
-              whileHover={{ y: -2, transition: { duration: 0.15 } }}
-              className={`rounded-xl border transition-shadow hover:shadow-sm ${
-                phase.done
-                  ? "border-brand-secondary bg-[#FDF9F6]"
-                  : "border-brand-accent bg-[#FAFAF9]"
-              }`}
-            >
-              {/* Phase header row */}
-              <div className="flex items-center gap-3 px-3.5 py-3">
-                <motion.span
-                  initial={phase.done ? { scale: 0.6, rotate: -20 } : { scale: 0.8 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{
-                    delay: 0.25 + i * 0.07,
-                    type: "spring",
-                    stiffness: 420,
-                    damping: 20,
-                  }}
-                  className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.58rem] font-bold shrink-0 ${
-                    phase.done
-                      ? "bg-brand-primary text-white"
-                      : "bg-brand-accent text-brand-muted"
-                  }`}
-                >
-                  {phase.done ? "✓" : i + 1}
-                </motion.span>
-                <span
-                  className={`text-[0.8rem] font-semibold flex-1 ${
-                    phase.done ? "text-brand-primary" : "text-brand-dark"
-                  }`}
-                >
-                  {phase.label}
-                </span>
-                {phase.done ? (
-                  <motion.span
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{
-                      delay: 0.3 + i * 0.07,
-                      type: "spring",
-                      stiffness: 450,
-                      damping: 18,
-                    }}
-                    className="text-[0.6rem] font-bold bg-[#566B3F] text-white rounded-full px-2.5 py-0.5 tracking-wide shrink-0"
-                  >
-                    Done
-                  </motion.span>
-                ) : i === completed ? (
-                  <span className="text-[0.6rem] font-semibold bg-[#B8975A]/20 text-[#8B6E32] rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
-                    Up Next
-                  </span>
-                ) : (
-                  <span className="text-[0.6rem] font-medium text-gray-400 bg-gray-100 rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
-                    Upcoming
-                  </span>
-                )}
-              </div>
+          {phases.map((phase, i) => {
+            const phaseCompleted = phase.items.every(
+              (item) => item.done
+            );
 
-              {/* Items */}
-              <ul className="flex flex-col gap-1.5 px-3.5 pb-3 pl-[3.25rem] list-none m-0">
-                {phase.items.map((item, j) => (
-                  <li key={j} className="flex items-center gap-2">
-                    <span
-                      className={`w-[5px] h-[5px] rounded-full shrink-0 ${
-                        phase.done ? "bg-brand-secondary" : "bg-brand-accent"
-                      }`}
-                    />
-                    <span
-                      className={`text-[0.72rem] leading-snug ${
-                        phase.done ? "text-brand-primary" : "text-brand-muted"
-                      }`}
-                    >
-                      {item}
+            const phaseCompletedCount = phase.items.filter(
+              (item) => item.done
+            ).length;
+
+            const phaseInProgress =
+              phaseCompletedCount > 0 && !phaseCompleted;
+
+            return (
+              <motion.div
+                key={i}
+                variants={phaseItemVariants}
+                whileHover={{
+                  y: -2,
+                  transition: { duration: 0.15 },
+                }}
+                className={`rounded-xl border transition-shadow hover:shadow-sm ${
+                  phaseCompleted
+                    ? "border-brand-secondary bg-[#FDF9F6]"
+                    : phaseInProgress
+                    ? "border-[#B8975A] bg-[#FFFDF8]"
+                    : "border-brand-accent bg-[#FAFAF9]"
+                }`}
+              >
+                {/* Phase header */}
+                <div className="flex items-center gap-3 px-3.5 py-3">
+                  <motion.span
+                    initial={
+                      phaseCompleted
+                        ? { scale: 0.6, rotate: -20 }
+                        : { scale: 0.8 }
+                    }
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{
+                      delay: 0.25 + i * 0.07,
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 20,
+                    }}
+                    className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.58rem] font-bold shrink-0 ${
+                      phaseCompleted
+                        ? "bg-brand-primary text-white"
+                        : phaseInProgress
+                        ? "bg-[#B8975A] text-white"
+                        : "bg-brand-accent text-brand-muted"
+                    }`}
+                  >
+                    {phaseCompleted ? "✓" : i + 1}
+                  </motion.span>
+
+                  <span
+                    className={`text-[0.8rem] font-semibold flex-1 ${
+                      phaseCompleted
+                        ? "text-brand-primary"
+                        : "text-brand-dark"
+                    }`}
+                  >
+                    {phase.label}
+                  </span>
+
+                  {phaseCompleted ? (
+                    <span className="text-[0.6rem] font-bold bg-[#566B3F] text-white rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
+                      Done
                     </span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+                  ) : phaseInProgress ? (
+                    <span className="text-[0.6rem] font-semibold bg-[#B8975A]/20 text-[#8B6E32] rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
+                      In Progress
+                    </span>
+                  ) : (
+                    <span className="text-[0.6rem] font-medium text-gray-400 bg-gray-100 rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
+                      Upcoming
+                    </span>
+                  )}
+                </div>
+
+                {/* Items */}
+                <ul className="flex flex-col gap-1.5 px-3.5 pb-3 pl-[3.25rem] list-none m-0">
+                  {phase.items.map((item, j) => (
+                    <li
+                      key={j}
+                      className="flex items-center gap-2"
+                    >
+                      <span
+                        className={`w-[14px] h-[14px] rounded-full shrink-0 flex items-center justify-center text-[8px] ${
+                          item.done
+                            ? "bg-[#566B3F] text-white"
+                            : "bg-brand-accent text-transparent"
+                        }`}
+                      >
+                        {item.done ? "✓" : ""}
+                      </span>
+
+                      <span
+                        className={`text-[0.72rem] leading-snug ${
+                          item.done
+                            ? "text-brand-primary"
+                            : "text-brand-muted"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </motion.div>
     </motion.div>
