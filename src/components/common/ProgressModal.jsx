@@ -227,7 +227,7 @@ export default function ProgressModal({ onClose }) {
                 >
                   {phase.label}
                 </span>
-                {phase.done && (
+                {phase.done ? (
                   <motion.span
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -237,10 +237,18 @@ export default function ProgressModal({ onClose }) {
                       stiffness: 450,
                       damping: 18,
                     }}
-                    className="text-[0.6rem] font-bold bg-brand-primary text-white rounded-full px-2.5 py-0.5 tracking-wide shrink-0"
+                    className="text-[0.6rem] font-bold bg-[#566B3F] text-white rounded-full px-2.5 py-0.5 tracking-wide shrink-0"
                   >
                     Done
                   </motion.span>
+                ) : i === completed ? (
+                  <span className="text-[0.6rem] font-semibold bg-[#B8975A]/20 text-[#8B6E32] rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
+                    Up Next
+                  </span>
+                ) : (
+                  <span className="text-[0.6rem] font-medium text-gray-400 bg-gray-100 rounded-full px-2.5 py-0.5 tracking-wide shrink-0">
+                    Upcoming
+                  </span>
                 )}
               </div>
 
