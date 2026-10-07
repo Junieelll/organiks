@@ -222,7 +222,7 @@ export default function ReplicaHeader() {
                   <a
                     href={link.href}
                     onClick={(e) => handleLinkClick(e, link)}
-                    className={`block text-base font-medium tracking-[0.02em] py-1.5 transition-colors no-underline ${
+                    className={`block text-sm font-medium tracking-[0.02em] py-1.5 transition-colors no-underline ${
                       (link.type === 'route' && location.pathname === link.href) ||
                       (link.type === 'home' && location.pathname === '/')
                         ? 'text-[#566B3F] font-semibold'

@@ -1,4 +1,6 @@
+import { useLocation } from "react-router-dom";
 import { SITE_INFO } from "../../constants/config";
+import { usePageTransition } from "./PageTransition";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   PhoneIcon,
@@ -9,7 +11,23 @@ import {
   TiktokIcon,
 } from "@hugeicons/core-free-icons";
 
+// Needs its own route: /privacy-policy
+const LEGAL_LINKS = [{ label: "Privacy Policy", href: "/privacy-policy" }];
+
 export default function ReplicaFooter() {
+  const { go } = usePageTransition();
+  const location = useLocation();
+
+  // Same behavior as the header: the page curtain handles the route change
+  const handleNav = (e, href) => {
+    e.preventDefault();
+    if (location.pathname === href) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      go(href);
+    }
+  };
+
   return (
     <>
       <footer id="location" className="pt-14 pb-10 bg-white text-[#222]">
@@ -155,10 +173,28 @@ export default function ReplicaFooter() {
 
       {/* Olive bottom bar */}
       <div
-        className="bg-[#4F5F3A] text-white text-center py-3.5 px-6 text-xs"
+        className="bg-[#4F5F3A] text-white py-3.5 px-6 text-xs"
         style={{ fontFamily: "var(--font-poppins)" }}
       >
-        © Organiks Salon and Wellness Spa 2026 All Rights Reserved.
+        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center">
+          <p className="m-0 text-white">
+            © Organiks Salon and Wellness Spa {new Date().getFullYear()} All
+            Rights Reserved.
+          </p>
+          <ul className="flex items-center gap-x-5 list-none m-0 p-0">
+            {LEGAL_LINKS.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={(e) => handleNav(e, link.href)}
+                  className="text-white/80 hover:text-white underline underline-offset-2 decoration-white/30 hover:decoration-white transition-colors"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </>
   );

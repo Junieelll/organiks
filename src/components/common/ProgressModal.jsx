@@ -86,11 +86,6 @@ export default function ProgressModal({ onClose }) {
 
   const percent = Math.round((completedItems / totalItems) * 100);
 
-  // Number of fully completed phases
-  const completedPhases = phases.filter((phase) =>
-    phase.items.every((item) => item.done)
-  ).length;
-
   // Close on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {

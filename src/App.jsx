@@ -14,6 +14,7 @@ import FloatingProgressButton from './components/common/FloatingProgressButton'
 import ProgressModal from './components/common/ProgressModal'
 import ReplicaAbout from './components/replica/ReplicaAbout'
 import ReplicaLocation from './components/replica/ReplicaLocation'
+import ReplicaPrivacy from './components/replica/ReplicaPrivacy'
 
 export default function App() {
   const [openProgress, setOpenProgress] = useState(false)
@@ -28,8 +29,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<ReplicaHome />} />
             <Route path="/services" element={<ReplicaServices />} />
-            {/* <Route path="/about" element={<ReplicaAbout />} />
-            <Route path="/location" element={<ReplicaLocation />} /> */}
+            <Route path="/about" element={<ReplicaAbout />} />
+            <Route path="/location" element={<ReplicaLocation />} />
+            <Route path="/privacy-policy" element={<ReplicaPrivacy />} />
           </Routes>
         </main>
 

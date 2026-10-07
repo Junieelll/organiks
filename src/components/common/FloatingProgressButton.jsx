@@ -1,7 +1,16 @@
 import { phases } from './progressData'
 
 export default function FloatingProgressButton({ onClick }) {
-  const completed = phases.filter((p) => p.done).length
+  // Find the first phase that is not fully completed
+  const currentPhaseIndex = phases.findIndex(
+    (phase) => !phase.items.every((item) => item.done)
+  )
+
+  // If everything is complete, show the final phase number
+  const currentPhase =
+    currentPhaseIndex === -1
+      ? phases.length
+      : currentPhaseIndex + 1
 
   return (
     <>
@@ -33,9 +42,11 @@ export default function FloatingProgressButton({ onClick }) {
           />
           <span className="relative block w-2.5 h-2.5 rounded-full bg-white" />
         </span>
+
         <span>View Progress</span>
+
         <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10.5px] font-bold tracking-normal">
-          Phase {completed}
+          Phase {currentPhase}
         </span>
       </button>
     </>

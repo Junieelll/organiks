@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -41,6 +41,49 @@ const categoryColors = {
   body:       { bg: "bg-[#EFF6F0]", iconColor: "#386641" },
 };
 
+// All categories at once, as a grid of tiles. Used inline on mobile and inside the category sheet.
+// The highlight slides between tiles (layoutId); each instance needs its own idPrefix.
+function CategoryGrid({ activeId, onSelect, idPrefix, reduce }) {
+  return (
+    <div className="grid grid-cols-4 gap-2">
+      {serviceCategories.map((cat) => {
+        const isActive = cat.id === activeId;
+        return (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => onSelect(cat.id)}
+            aria-pressed={isActive}
+            aria-label={cat.title}
+            className={`relative flex flex-col items-center gap-1.5 rounded-xl border px-1 py-3 transition-colors cursor-pointer ${
+              isActive ? "border-transparent" : "bg-white border-[#E8DDD2] active:bg-[#F4EEE3]"
+            }`}
+          >
+            {isActive && (
+              <motion.span
+                layoutId={`${idPrefix}-active`}
+                transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
+                className="absolute inset-0 rounded-xl bg-[#EDF1E6] border border-[#566B3F]"
+              />
+            )}
+            <span className="relative flex flex-col items-center gap-1.5">
+              <HugeiconsIcon
+                icon={categoryIcons[cat.id] || ScissorIcon}
+                size={20}
+                color={isActive ? "#566B3F" : "#8A8F88"}
+                strokeWidth={isActive ? 2.2 : 1.8}
+              />
+              <span className={`text-[11px] font-medium leading-none ${isActive ? "text-[#566B3F]" : "text-[#666]"}`}>
+                {cat.title.split(" ")[0]}
+              </span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ReplicaServices() {
   // A card on Home can open this page with its category already selected
   const location = useLocation();
@@ -48,6 +91,46 @@ export default function ReplicaServices() {
   const [activeTab, setActiveTab] = useState(startCategory ?? serviceCategories[0].id);
   const [search, setSearch] = useState("");
   const searchInputRef = useRef(null);
+
+  // Mobile category navigation: the full grid sits inline; once it scrolls out of view a slim
+  // bar takes over (current category + "All categories") so switching is always one tap away.
+  const gridRef = useRef(null);
+  const [pastGrid, setPastGrid] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  useEffect(() => {
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const el = gridRef.current;
+      // offsetHeight is 0 on desktop, where the grid is hidden and the tab bar is used instead
+      if (!el || el.offsetHeight === 0) return setPastGrid(false);
+      // Mobile header is 64px tall: the moment the grid's top slips under it, the slim bar takes over
+      setPastGrid(el.getBoundingClientRect().top < 64);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // Close the sheet when the inline grid is back on screen, or on Escape
+  useEffect(() => {
+    if (!pastGrid) setSheetOpen(false);
+  }, [pastGrid]);
+  useEffect(() => {
+    if (!sheetOpen) return;
+    const onKey = (e) => e.key === "Escape" && setSheetOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sheetOpen]);
 
   // ── Bento entrance: one orchestrated sequence ──────────────────────────
   // cards rise in reading order → photos settle from a slight zoom → text follows.
@@ -84,7 +167,7 @@ export default function ReplicaServices() {
         visible: (i = 0) => ({
           opacity: 1,
           y: 0,
-          transition: { duration: 0.5, delay: i < 6 ? enterDelay + i * 0.05 : 0, ease },
+          transition: { duration: 0.25, delay: i < 6 ? i * 0.025 : 0, ease },
         }),
       };
   const blockReveal = {
@@ -106,15 +189,37 @@ export default function ReplicaServices() {
     searchInputRef.current?.focus();
   };
 
+  // Switching category always lands on the start of the new list, just below whichever
+  // sticky bar is showing (slim bar on mobile, tab bar on larger screens).
+  //
+  // Swapping lists changes the page height. If the new list is shorter, the browser clamps the
+  // scroll position mid-animation and the smooth scroll gets cut off. So: hold the panel at its
+  // current height while the swap plays, scroll, then re-check the landing spot once things settle.
   const handleSelectCategory = (categoryId) => {
+    const panel = document.getElementById("services-panel");
+    if (panel) panel.style.minHeight = `${panel.offsetHeight}px`;
+
     setActiveTab(categoryId);
     setSearch("");
-    const anchor = document.getElementById("services-anchor");
-    if (anchor) {
-      const headerHeight = window.innerWidth >= 640 ? 80 : 64;
-      const targetY = anchor.getBoundingClientRect().top + window.scrollY - headerHeight;
-      window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-    }
+    setSheetOpen(false);
+    if (!panel) return;
+
+    const landingY = () =>
+      Math.max(
+        0,
+        panel.getBoundingClientRect().top + window.scrollY - (window.innerWidth >= 640 ? 90 : 84)
+      );
+    window.scrollTo({ top: landingY(), behavior: "smooth" });
+
+    // Correct any drift after the swap, then release the height hold
+    setTimeout(() => {
+      if (Math.abs(window.scrollY - landingY()) > 6) {
+        window.scrollTo({ top: landingY(), behavior: "smooth" });
+      }
+    }, 325);
+    setTimeout(() => {
+      panel.style.minHeight = "";
+    }, 500);
   };
 
   return (
@@ -160,19 +265,19 @@ export default function ReplicaServices() {
               </div>
               <motion.div variants={bentoText} className="pt-3">
                 <h3
-                  className="text-[13px] sm:text-[17px] lg:text-[19px] font-medium tracking-tight leading-snug mb-1 text-[#14291F]"
+                  className="text-sm sm:text-[17px] lg:text-[19px] font-medium tracking-tight leading-snug mb-1 text-[#14291F]"
                   style={{ fontFamily: "var(--font-heading)" }}
                 >
                   Hair Services
                 </h3>
-                <p className="text-[9.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C] mb-3 line-clamp-3">
+                <p className="text-[11.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C] mb-3 line-clamp-3">
                   Luxury hair rituals, color artistry and treatment care designed
                   to enhance shine, softness and confidence.
                 </p>
                 <button
                   type="button"
                   onClick={() => handleSelectCategory("hair")}
-                  className="group inline-flex items-center gap-2.5 rounded-full bg-[#14291F] hover:bg-[#1f3d2b] text-[#EFE0BC] pl-4 pr-1 py-1 text-[10px] sm:text-[11px] font-medium tracking-wide transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#566B3F]"
+                  className="group inline-flex items-center gap-2.5 rounded-full bg-[#14291F] hover:bg-[#1f3d2b] text-[#EFE0BC] pl-4 pr-1 py-1 text-[10.5px] sm:text-[11px] font-medium tracking-wide transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#566B3F]"
                 >
                   Explore Hair Services
                   <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white flex items-center justify-center transition-transform group-hover:translate-x-0.5">
@@ -201,7 +306,7 @@ export default function ReplicaServices() {
                 >
                   Nail Services
                 </span>
-                <span className="block text-[9.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-white/85 line-clamp-2">
+                <span className="block text-[11.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-white/85 line-clamp-2">
                   Clean, elegant, polished nail rituals for everyday beauty and special moments.
                 </span>
               </motion.span>
@@ -222,7 +327,7 @@ export default function ReplicaServices() {
                 >
                   Facial Services
                 </span>
-                <span className="block text-[9.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C]">
+                <span className="block text-[11.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C]">
                   Nourish, restore, reveal your natural glow.
                 </span>
               </motion.span>
@@ -248,7 +353,7 @@ export default function ReplicaServices() {
                 >
                   Massage Services
                 </span>
-                <span className="block text-[9.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C] max-w-sm">
+                <span className="block text-[11.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C] max-w-sm">
                   Restore balance, relieve tension and rejuvenate your body and mind.
                 </span>
               </motion.span>
@@ -265,8 +370,109 @@ export default function ReplicaServices() {
       {/* ── Scroll Anchor for Category Bar ── */}
       <div id="services-anchor" className="scroll-mt-20 sm:scroll-mt-24" />
 
+      {/* ── Mobile: every category visible at once (the tab bar hid most of them off-screen) ── */}
+      <div ref={gridRef} className="sm:hidden px-4 pt-2 pb-1">
+        <p className="m-0 mb-3 text-[11px] tracking-[0.14em] uppercase text-[#6B726D] font-semibold">
+          Browse by category
+        </p>
+        <CategoryGrid
+          activeId={activeTab}
+          onSelect={(id) => handleSelectCategory(id)}
+          idPrefix="inline"
+          reduce={reduce}
+        />
+      </div>
+
+      {/* ── Mobile: slim bar appears once the grid has scrolled away ── */}
+      <AnimatePresence>
+        {pastGrid && sheetOpen && (
+          <motion.div
+            key="scrim"
+            className="sm:hidden fixed inset-0 z-20 bg-black/25"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setSheetOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {pastGrid && (
+          <motion.div
+            key="mini"
+            className="sm:hidden fixed top-16 inset-x-0 z-30 bg-[#FEFBF7]/95 backdrop-blur-md border-b border-[#E8DDD2]/60 shadow-sm"
+            initial={reduce ? { opacity: 0 } : { y: "-100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reduce ? { opacity: 0 } : { y: "-100%", opacity: 0 }}
+            transition={{ duration: reduce ? 0.2 : 0.4, ease }}
+          >
+            <button
+              type="button"
+              onClick={() => setSheetOpen((o) => !o)}
+              aria-expanded={sheetOpen}
+              aria-controls="category-sheet"
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 cursor-pointer bg-transparent border-0"
+            >
+              <span className="flex items-center gap-2.5 min-w-0">
+                <HugeiconsIcon
+                  icon={categoryIcons[activeTab] || ScissorIcon}
+                  size={18}
+                  color="#566B3F"
+                  strokeWidth={2.2}
+                />
+                <span className="text-[13px] font-semibold text-[#14291F] truncate">
+                  {activeCategory?.title}
+                </span>
+              </span>
+              <span className="flex items-center gap-1.5 shrink-0 text-[12px] font-medium text-[#566B3F]">
+                All categories ({serviceCategories.length})
+                <motion.svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  animate={{ rotate: sheetOpen ? 180 : 0 }}
+                  transition={{ duration: reduce ? 0 : 0.25, ease }}
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </motion.svg>
+              </span>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {sheetOpen && (
+                <motion.div
+                  id="category-sheet"
+                  key="sheet"
+                  className="overflow-hidden"
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto" }}
+                  exit={{ height: 0 }}
+                  transition={{ duration: reduce ? 0.15 : 0.35, ease }}
+                >
+                  <div className="px-4 pt-1 pb-4">
+                    <CategoryGrid
+                      activeId={activeTab}
+                      onSelect={(id) => handleSelectCategory(id)}
+                      idPrefix="sheet"
+                      reduce={reduce}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Category Tab Bar ─────────────────────────────────────────── */}
-      <div id="services-menu" className="sticky top-[64px] sm:top-[80px] z-30 bg-[#FEFBF7]/95 backdrop-blur-md border-b border-[#E8DDD2]/60 shadow-sm">
+      <div id="services-menu" className="hidden sm:block sticky top-[64px] sm:top-[80px] z-30 bg-[#FEFBF7]/95 backdrop-blur-md border-b border-[#E8DDD2]/60 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex gap-0 overflow-x-auto scrollbar-none">
             {serviceCategories.map((cat) => {
@@ -297,7 +503,7 @@ export default function ReplicaServices() {
       </div>
 
       {/* ── Service Panel ─────────────────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 ">
+      <div id="services-panel" className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 ">
         <AnimatePresence mode="wait">
           {activeCategory && (
             <motion.div
@@ -305,7 +511,7 @@ export default function ReplicaServices() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
             >
               {/* Category Header */}
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">

@@ -28,20 +28,20 @@ export const phases = [
   },
   {
     label: 'Phase 3 — Inner Pages & Router',
-    done: false,
+    done: true,
     items: [
       { label: 'React Router navigation', done: true },
-      { label: 'About Us page', done: false },
+      { label: 'About Us page', done: true },
       { label: 'Services & pricing page', done: true },
-      { label: 'Visual diary Gallery page', done: false },
-      { label: 'Contact & inquiries page', done: false },
+      { label: 'Location page', done: true },
+      { label: 'Contact & inquiries page', done: true },
     ],
   },
   {
     label: 'Phase 4 — Polish & Advanced Features',
     done: false,
     items: [
-      { label: 'Framer Motion scroll animations', done: false },
+      { label: 'Framer Motion scroll animations', done: true },
       { label: 'Micro-interactions & hover scaling', done: false },
       { label: 'Cross-browser optimization', done: false },
       { label: 'Performance audit & asset compression', done: false },
