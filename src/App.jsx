@@ -1,6 +1,6 @@
-import { useState } from 'react'
+//import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
+//import { AnimatePresence } from 'framer-motion'
 
 // Replica Components
 import ReplicaHeader from './components/replica/ReplicaHeader'
@@ -10,14 +10,14 @@ import ReplicaFooter from './components/replica/ReplicaFooter'
 import { PageTransitionProvider } from './components/replica/PageTransition'
 
 // Common Components
-import FloatingProgressButton from './components/common/FloatingProgressButton'
-import ProgressModal from './components/common/ProgressModal'
+//import FloatingProgressButton from './components/common/FloatingProgressButton'
+//import ProgressModal from './components/common/ProgressModal'
 import ReplicaAbout from './components/replica/ReplicaAbout'
 import ReplicaLocation from './components/replica/ReplicaLocation'
 import ReplicaPrivacy from './components/replica/ReplicaPrivacy'
 
 export default function App() {
-  const [openProgress, setOpenProgress] = useState(false)
+  //const [openProgress, setOpenProgress] = useState(false)
 
   return (
     <BrowserRouter>
@@ -38,10 +38,10 @@ export default function App() {
         <ReplicaFooter />
 
         {/* Development Progress Tracker */}
-        <FloatingProgressButton onClick={() => setOpenProgress(true)} />
+        {/* <FloatingProgressButton onClick={() => setOpenProgress(true)} />
         <AnimatePresence>
           {openProgress && <ProgressModal onClose={() => setOpenProgress(false)} />}
-        </AnimatePresence>
+        </AnimatePresence> */}
       </div>
       </PageTransitionProvider>
     </BrowserRouter>
