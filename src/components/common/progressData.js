@@ -42,8 +42,8 @@ export const phases = [
     done: false,
     items: [
       { label: 'Framer Motion scroll animations', done: true },
-      { label: 'Micro-interactions & hover scaling', done: false },
-      { label: 'Cross-browser optimization', done: false },
+      { label: 'Micro-interactions & hover scaling', done: true },
+      { label: 'Cross-browser optimization', done: true },
       { label: 'Performance audit & asset compression', done: false },
     ],
   },
