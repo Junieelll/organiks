@@ -79,7 +79,7 @@ const wordVariants = {
   visible: { y: "0%", transition: { duration: 0.9, ease: EASE } },
 };
 
-export default function ReplicaBanner() {
+export default function Banner() {
   const reduceMotion = useReducedMotion();
   const cardRef = useRef(null);
 
@@ -111,7 +111,7 @@ export default function ReplicaBanner() {
             <motion.div className="w-full h-full" style={{ y: photoY }}>
               <motion.div className="w-full h-full" variants={photoVariants}>
                 <img
-                  src="/images/replica/banner.png"
+                  src="/images/media/banner.png"
                   alt="Organiks Spa Experience"
                   className="w-full h-full object-cover object-[94%_32%] scale-[1.45] origin-[92%_32%]"
                 />
@@ -127,7 +127,7 @@ export default function ReplicaBanner() {
           >
             <motion.div
               className="absolute inset-0 bg-cover bg-[position:center_right] lg:bg-center"
-              style={{ backgroundImage: `url('/images/replica/banner.png')` }}
+              style={{ backgroundImage: `url('/images/media/banner.png')` }}
               variants={photoVariants}
             />
           </motion.div>

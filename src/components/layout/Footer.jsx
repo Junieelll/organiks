@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { SITE_INFO } from "../../constants/config";
-import { usePageTransition } from "./PageTransition";
+import { usePageTransition } from "../common/PageTransition";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   PhoneIcon,
@@ -14,7 +14,7 @@ import {
 // Needs its own route: /privacy-policy
 const LEGAL_LINKS = [{ label: "Privacy Policy", href: "/privacy-policy" }];
 
-export default function ReplicaFooter() {
+export default function Footer() {
   const { go } = usePageTransition();
   const location = useLocation();
 

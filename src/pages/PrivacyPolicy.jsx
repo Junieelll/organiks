@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { SITE_INFO } from "../../constants/config";
-import { usePageEnterDelay } from "./PageTransition";
+import { SITE_INFO } from "../constants/config";
+import { usePageEnterDelay } from "../components/common/PageTransition";
 
 const LAST_UPDATED = "October 7, 2026";
 const ADDRESS =
@@ -55,7 +55,7 @@ function List({ items }) {
 const linkClass =
   "text-[#566B3F] underline underline-offset-2 hover:text-[#14291F] transition-colors";
 
-export default function ReplicaPrivacy() {
+export default function PrivacyPolicy() {
   const reduceMotion = useReducedMotion();
   const enterDelay = usePageEnterDelay(); // wait for the page curtain when arriving via nav
 

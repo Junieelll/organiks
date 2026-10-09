@@ -5,7 +5,7 @@ export const serviceCategories = [
     id: "hair",
     title: "Hair Services",
     tagline: "Luxury hair rituals, color artistry and treatment care designed to enhance shine, softness and confidence.",
-    image: "/images/replica/hair.webp",
+    image: "/images/media/hair.webp",
     items: [
       { name: "Precision Balayage", price: "₱4,500" },
       { name: "Micro Light Highlights", price: "₱4,000" },
@@ -26,7 +26,7 @@ export const serviceCategories = [
     id: "facials",
     title: "Facial Services",
     tagline: "Nourish, restore, reveal your natural glow.",
-    image: "/images/replica/skin.webp",
+    image: "/images/media/skin.webp",
     items: [
       { name: "Carbon Glow Therapy", price: "₱1,500" },
       { name: "Pico Renewal Facial", price: "₱5,000" },
@@ -47,7 +47,7 @@ export const serviceCategories = [
     id: "massage",
     title: "Massage Services",
     tagline: "Restore balance, relieve tension and rejuvenate your body and mind.",
-    image: "/images/replica/body.webp",
+    image: "/images/media/body.webp",
     items: [
       { name: "Full Body Massage (60 min)", price: "₱800" },
       { name: "Full Body Massage (90 min)", price: "₱1,100" },
@@ -65,7 +65,7 @@ export const serviceCategories = [
     id: "nails",
     title: "Nail Services",
     tagline: "Clean, elegant, polished nail rituals for everyday beauty and special moments",
-    image: "/images/replica/nails.webp",
+    image: "/images/media/nails.webp",
     items: [
       { name: "Gel Manicure", price: "₱750" },
       { name: "Gel Pedicure", price: "₱850" },
@@ -84,7 +84,7 @@ export const serviceCategories = [
     id: "lashes",
     title: "Lash & Wax Services",
     tagline: "Enhance your natural beauty with our expert lash and brow services.",
-    image: "/images/replica/lashes.webp",
+    image: "/images/media/lashes.webp",
     items: [
       { name: "Natural Lash Extensions", price: "₱1,000" },
       { name: "Soft Volume Lash", price: "₱1,200" },
@@ -103,7 +103,7 @@ export const serviceCategories = [
     id: "aesthetics",
     title: "Aesthetic Services",
     tagline: "Advanced Aesthetic procedures done by professionals.",
-    image: "/images/replica/aesthetic.webp",
+    image: "/images/media/aesthetic.webp",
     items: [
       { name: "Fillers", price: "₱8,000+" },
       { name: "Botox", price: "₱3,500+" },
@@ -122,7 +122,7 @@ export const serviceCategories = [
     id: "body",
     title: "Body Contouring",
     tagline: "Advanced Care. Beautiful Results. Naturally You.",
-    image: "/images/replica/body.webp",
+    image: "/images/media/body.webp",
     items: [
       { name: "Body Contouring Slimming", price: "₱2,000" },
       { name: "FaceBody Contouring Slimming", price: "₱6,000" },

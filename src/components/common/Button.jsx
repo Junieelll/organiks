@@ -35,7 +35,7 @@ export default function Button({
       'text-[#8B5E3C] hover:text-[#724b2f] hover:bg-[#8B5E3C]/10 p-0',
   }[variant] || 'bg-[#8B5E3C] text-white'
 
-  const targetUrl = isBooking ? BOOKING_URL : href
+  const targetUrl = isBooking ? BOOKING_URL : (href || to)
 
   if (targetUrl) {
     return (

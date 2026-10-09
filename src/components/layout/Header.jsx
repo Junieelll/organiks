@@ -2,27 +2,31 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 import { BOOKING_URL } from '../../constants/config'
-import { usePageTransition } from './PageTransition'
+import { usePageTransition } from '../common/PageTransition'
 
-export default function ReplicaHeader() {
+export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(
+    () => typeof window !== 'undefined' && window.scrollY > 30
+  )
   const { go } = usePageTransition()
   const location = useLocation()
+  const [prevPath, setPrevPath] = useState(location.pathname)
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 30)
     }
-    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile menu on route change
-  useEffect(() => {
+  // Close mobile menu on route change (adjusting state during render,
+  // so there's no extra effect-triggered render or flash of the open menu)
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname)
     setMenuOpen(false)
-  }, [location.pathname])
+  }
 
   const navLinks = [
     { label: 'Home',           href: '/',          anchor: '#home',     type: 'home' },
@@ -75,10 +79,10 @@ export default function ReplicaHeader() {
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         solidHeader
           ? 'bg-[#F4EEE3]/95 backdrop-blur-md shadow-sm border-b border-[#E6D9C2]/60'
-          : 'bg-gradient-to-b from-black/70 via-black/30 to-transparent'
+          : 'bg-linear-to-b from-black/70 via-black/30 to-transparent'
       }`}
     >
-      <div className="max-w-[1280px] mx-auto px-6 h-16 sm:h-20 flex items-center justify-between transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-6 h-16 sm:h-20 flex items-center justify-between transition-all duration-300">
         {/* Logo */}
         <a
           href="/"
@@ -177,14 +181,14 @@ export default function ReplicaHeader() {
           <motion.span
             animate={menuOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className={`w-6 h-[2px] rounded-full transition-colors ${
+            className={`w-6 h-0.5 rounded-full transition-colors ${
               solidHeader ? 'bg-[#222]' : 'bg-white'
             }`}
           />
           <motion.span
             animate={menuOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className={`w-6 h-[2px] rounded-full transition-colors ${
+            className={`w-6 h-0.5 rounded-full transition-colors ${
               solidHeader ? 'bg-[#222]' : 'bg-white'
             }`}
           />

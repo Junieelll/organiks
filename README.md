@@ -1,88 +1,150 @@
 # Organiks Salon & Wellness Spa 🌿✨
 
-A modern, responsive, and luxury marketing & portfolio website for **Organiks Salon & Wellness Spa**, built with React 19, Vite, Tailwind CSS v4, and Framer Motion.
+A luxury, high-performance web application for **Organiks Salon and Wellness Spa** — an all-in-one beauty and wellness destination located in Angeles City, Pampanga.
+
+Built with **React 19**, **Vite 8**, **Tailwind CSS v4**, **React Router v7**, and **Framer Motion**.
 
 ---
 
 ## 📖 Overview
 
-The website is designed to deliver a high-end, serene visual experience reflecting the salon's organic wellness philosophy. It features an interactive **Development Progress Tracker** that allows clients and stakeholders to follow development phases in real-time.
+This repository powers the official web experience for Organiks Salon and Wellness Spa. The application reflects the brand's philosophy of organic luxury, botanical calm, and state-of-the-art care across hair, skin, body contouring, nails, lashes, and aesthetic enhancements.
 
-- **Design Philosophy:** Organic luxury, warm earthy tones, refined typography, and smooth micro-interactions.
-- **Reference Inspiration:** [Organiks Salon & Wellness Spa](https://organikssalonandwellnessspa.com/)
+- **Brand Motto:** *Reveal. Renew. Radiate.*
+- **Core Pillars:** Natural Ingredients • Advanced Technology • Expert Care
+- **Location:** 2nd & 3rd Floor, Friendship Highway, Cutcut, Angeles City, Pampanga
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Dependencies
 
-| Technology | Purpose |
-| :--- | :--- |
-| **[React 19](https://react.dev/)** | Component-driven UI development |
-| **[Vite 8](https://vitejs.dev/)** | Fast modern frontend tooling & bundler |
-| **[Tailwind CSS v4](https://tailwindcss.com/)** | Utility-first styling with theme-level brand design tokens |
-| **[Framer Motion](https://www.framer.com/motion/)** | Smooth physics-based spring animations & micro-interactions |
-| **[Google Fonts](https://fonts.google.com/)** | *Cormorant Garamond* (Editorial serif) & *Montserrat* (Body sans) |
+| Layer | Tool / Library | Purpose |
+| :--- | :--- | :--- |
+| **Framework & Runtime** | [React 19](https://react.dev/) | Modern concurrent React with functional components |
+| **Bundler & Tooling** | [Vite 8](https://vitejs.dev/) | Ultra-fast HMR and optimized production bundling |
+| **Routing** | [React Router v7](https://reactrouter.com/) | Client-side routing with clean URL navigation |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first styling with `@theme` token bridge |
+| **Animation Engine** | [Framer Motion 14](https://www.framer.com/motion/) | Cinematic page transitions, scroll triggers, and parallax |
+| **Icons** | [Hugeicons](https://hugeicons.com/) & [Lucide](https://lucide.dev/) | Luxury stroke-based minimalist iconography |
+
+---
+
+## 📂 Project Architecture
+
+The codebase follows a clean, modular structure separating **pages**, **layout components**, **reusable sections**, **shared utilities**, and **static content**:
+
+```text
+organiks/
+├── public/
+│   ├── favicon.svg             # Browser tab icon
+│   ├── icons.svg               # SVG sprite sheet
+│   └── images/
+│       ├── about/              # About page imagery
+│       ├── clients/            # Review & client avatars
+│       ├── media/              # High-res video, hero poster, service icons & banners
+│       └── logo.webp           # Brand logo mark
+│
+├── src/
+│   ├── pages/                  # Top-level page views (one per route)
+│   │   ├── Home.jsx            # Hero video, Brand story, Pillars, Bento grid, Reviews
+│   │   ├── Services.jsx        # Full service catalog, pricing tables & category search
+│   │   ├── About.jsx           # Philosophy, team commitment, values & ambiance
+│   │   ├── Location.jsx        # Google Maps embed, interactive directions, hours & contact
+│   │   └── PrivacyPolicy.jsx   # Privacy policy & customer terms
+│   │
+│   ├── components/
+│   │   ├── layout/             # Global structural components
+│   │   │   ├── Header.jsx      # Sticky blur navbar, desktop navigation & mobile drawer
+│   │   │   └── Footer.jsx      # Comprehensive footer, operating hours & quick links
+│   │   │
+│   │   ├── sections/           # Reusable composite sections
+│   │   │   ├── Banner.jsx      # Luxury booking CTA banner with parallax effect
+│   │   │   └── Reviews.jsx     # Smooth dragging & auto-playing testimonials carousel
+│   │   │
+│   │   ├── common/             # Shared UI components & animations
+│   │   │   ├── Button.jsx      # Standardized button styling
+│   │   │   └── PageTransition.jsx # Curtain & circular clip-path page transition system
+│   │   │
+│   │   └── dev/                # Development archives (historical milestones & progress modal)
+│   │       ├── FloatingProgressButton.jsx
+│   │       ├── ProgressModal.jsx
+│   │       └── progressData.js
+│   │
+│   ├── constants/
+│   │   └── config.js           # Single source of truth for contact info, hours & URLs
+│   │
+│   ├── data/
+│   │   └── services.js         # Complete service menu, categories, descriptions & pricing
+│   │
+│   ├── App.jsx                 # Application root & React Router configuration
+│   ├── index.css               # Design system tokens, Google Fonts & Tailwind setup
+│   └── main.jsx                # DOM mount entry point
+│
+├── index.html                  # HTML template with preconnected Google Fonts & meta tags
+├── vite.config.js              # Vite configuration & Tailwind plugin
+└── package.json
+```
 
 ---
 
 ## 🎨 Design System & Brand Palette
 
-The project is styled using bespoke CSS custom properties and Tailwind CSS theme tokens:
+The design system is defined in [`src/index.css`](file:///c:/projects/organiks/src/index.css) using CSS Custom Properties and Tailwind CSS v4 `@theme` mappings:
 
-| Token | Hex Code | Role |
+### Botanical Sanctuary Palette
+| Token | Hex | Role |
 | :--- | :--- | :--- |
-| `--color-brand-primary` | `#8B5E3C` | Warm Earth Brown / Primary Buttons & Headers |
-| `--color-brand-secondary` | `#C9A98A` | Muted Sand / Accents & Subheadings |
-| `--color-brand-bg` | `#F8F5F1` | Off-white Cream / Global Canvas Background |
-| `--color-brand-surface` | `#FFFFFF` | Pure White / Cards, Modals & Surfaces |
-| `--color-brand-dark` | `#2C2723` | Deep Charcoal Espresso / High-contrast Headings |
-| `--color-brand-muted` | `#756C64` | Warm Gray / Body Copy & Descriptions |
-| `--color-brand-accent` | `#E8DDD2` | Soft Linen / Borders & Subtle Dividers |
+| `--deep` | `#14291F` | Deep Forest Green — Primary dark canvas & high-contrast surfaces |
+| `--olive` | `#566B3F` | Muted Olive — Subheadings, active states & botanical accents |
+| `--deep-green` | `#4F5F3A` | Supporting botanical green tone |
+| `--gold` | `#B8975A` | Warm Gold — Luxury highlights, badges, dividers & pill borders |
+| `--cream` | `#F4EEE3` | Warm Linen — Card surfaces, warm section dividers |
+| `--ivory` | `#FEFBF7` | Pure Ivory — Soft section backgrounds |
+| `--color-primary` | `#8B5E3C` | Warm Earth Bronze — Accent buttons and calls-to-action |
+
+### Typography
+- **Headings:** `Cormorant Garamond` (Editorial serif, elegant curves)
+- **Body & Navigation:** `Montserrat` (Clean modern geometric sans)
+- **Accents & Badges:** `Poppins` (Contemporary sans for UI elements)
 
 ---
 
-## 🚀 Features
+## 🧭 Routing & Navigation
 
-- **Live Development Progress Modal**:
-  - Interactive floating widget with a pulsating indicator.
-  - Origin-anchored spring animations opening from the bottom right.
-  - Animated progress bar fill transition calculating overall milestone completion.
-  - Cascading staggered list of project phases.
-  - Keyboard accessible (`Esc` key to dismiss) and backdrop-click closing.
-- **Responsive Layout**: Designed mobile-first, adapting gracefully from small mobile screens to large desktop monitors.
-- **Zero-Config Deployment**: Optimized for instant deployment on Vercel or Netlify.
+Routes are managed declaratively in [`src/App.jsx`](file:///c:/projects/organiks/src/App.jsx):
 
----
-
-## 📂 Project Structure
-
-```text
-organiks/
-├── public/                # Static public assets
-├── src/
-│   ├── assets/            # Images, SVGs, and brand assets
-│   ├── components/
-│   │   ├── FloatingProgressButton.jsx  # Floating trigger button with pulse animation
-│   │   ├── ProgressModal.jsx           # Animated modal with Framer Motion
-│   │   └── progressData.js             # Project milestones & roadmap items
-│   ├── App.jsx            # Main app shell & AnimatePresence manager
-│   ├── index.css          # Design system, CSS variables & typography
-│   └── main.jsx           # React DOM root entry
-├── index.html             # HTML entry point with Google Fonts preconnect
-├── package.json           # Dependencies and project scripts
-├── vite.config.js         # Vite configuration with Tailwind CSS plugin
-└── README.md              # Documentation
-```
+| Path | Component | Description |
+| :--- | :--- | :--- |
+| `/` | [`Home.jsx`](file:///c:/projects/organiks/src/pages/Home.jsx) | Landing page with hero video, services bento grid, pillars, and reviews |
+| `/services` | [`Services.jsx`](file:///c:/projects/organiks/src/pages/Services.jsx) | Interactive category tabs, instant search, and full price menu |
+| `/about` | [`About.jsx`](file:///c:/projects/organiks/src/pages/About.jsx) | Brand story, botanical philosophy, and facility highlights |
+| `/location` | [`Location.jsx`](file:///c:/projects/organiks/src/pages/Location.jsx) | Interactive Google Map embed, live hours status, and directions |
+| `/privacy-policy` | [`PrivacyPolicy.jsx`](file:///c:/projects/organiks/src/pages/PrivacyPolicy.jsx) | Client privacy statement and treatment booking policies |
 
 ---
 
-## 🚦 Roadmap & Phases
+## ✨ Motion & Transition System
 
-- [x] **Phase 1 — Foundation**: Vite + React setup, Tailwind CSS v4, Brand design tokens, Framer Motion integration.
-- [ ] **Phase 2 — Homepage**: Navbar, Hero section, About introduction, Service highlights, Testimonials, CTA, Footer.
-- [ ] **Phase 3 — Inner Pages**: Dedicated `/about`, `/services`, `/gallery`, and `/contact` views.
-- [ ] **Phase 4 — Polish**: Responsive refinement, hover effects, micro-animations, and typography adjustments.
-- [ ] **Phase 5 — QA & Launch**: Cross-browser testing, link validations, performance audit, production sign-off.
+Located in [`src/components/common/PageTransition.jsx`](file:///c:/projects/organiks/src/components/common/PageTransition.jsx):
+
+1. **Curtain Transition (`go(href, options)`):**
+   - A deep green brand curtain drops down to conceal the screen.
+   - The route changes and scroll position resets seamlessly beneath the curtain.
+   - The curtain falls away downward to reveal the newly mounted page.
+2. **Circular Origin Reveal (`goReveal(href, options)`):**
+   - An organic expanding circle emerges from the user's click coordinate (`e.clientX`, `e.clientY`).
+   - Displays the destination title momentarily, then reveals the target category on `/services`.
+3. **Accessibility First:**
+   - All animations automatically respect `prefers-reduced-motion` via Framer Motion's `useReducedMotion()`.
+
+---
+
+## ⚙️ Configuration & Content Management
+
+- **Centralized Brand Information:**
+  Edit [`src/constants/config.js`](file:///c:/projects/organiks/src/constants/config.js) to update phone numbers, operating hours, business address, Google Maps link, and Google Apps Script booking endpoint.
+- **Service Catalog & Pricing:**
+  Edit [`src/data/services.js`](file:///c:/projects/organiks/src/data/services.js) to add or edit treatment categories, item titles, descriptions, and pricing in Philippine Pesos (₱).
 
 ---
 
@@ -90,47 +152,44 @@ organiks/
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (version 18 or higher recommended)
-- `npm` or your preferred package manager
+- `npm`
 
-### 1. Clone the repository
+### Installation
 ```bash
-git clone https://github.com/YOUR_USERNAME/organiks.git
+git clone https://github.com/Junieelll/organiks.git
 cd organiks
-```
-
-### 2. Install dependencies
-```bash
 npm install
 ```
 
-### 3. Start development server
+### Development Server
 ```bash
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
+Runs the local dev server at `http://localhost:5173`.
 
-### 4. Build for production
+### Production Build
 ```bash
 npm run build
 ```
-The compiled output will be generated in the `dist/` directory.
+Creates an optimized, minified bundle in the `dist/` folder ready for deployment.
 
-### 5. Run linter
+### Preview Production Build
+```bash
+npm run preview
+```
+Spins up a local web server to preview the built `dist/` directory.
+
+### Linting
 ```bash
 npm run lint
 ```
 
 ---
 
-## 🌐 Deploying to Vercel
+## 🚀 Deployment
 
-1. Push your code to GitHub:
-   ```bash
-   git add .
-   git commit -m "feat: project documentation and animated progress modal"
-   git push -u origin main
-   ```
-2. Go to [Vercel](https://vercel.com) and log in with your GitHub account.
-3. Click **"Add New..."** &rarr; **"Project"** and import the `organiks` repository.
-4. Keep the default settings (Vercel automatically detects the Vite preset).
-5. Click **"Deploy"**. Any subsequent pushes to `main` will trigger automatic deployments.
+The project builds standard static HTML/JS/CSS output in `dist/` and is ready for one-click deployment on **Vercel**, **Netlify**, or **Cloudflare Pages**:
+
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+- **SPA Routing Rule:** All routes (`/*`) should rewrite to `/index.html`.

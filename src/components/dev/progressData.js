@@ -12,7 +12,7 @@ export const phases = [
     ],
   },
   {
-    label: 'Phase 2 — Homepage Landing Page (Replica)',
+    label: 'Phase 2 — Homepage Landing Page',
     done: true,
     items: [
       { label: 'Responsive sticky blurred Navbar & animated mobile menu', done: true },
@@ -44,17 +44,17 @@ export const phases = [
       { label: 'Framer Motion scroll animations', done: true },
       { label: 'Micro-interactions & hover scaling', done: true },
       { label: 'Cross-browser optimization', done: true },
-      { label: 'Performance audit & asset compression', done: false },
+      { label: 'Performance audit & asset compression', done: true },
     ],
   },
   {
     label: 'Phase 5 — QA & Launch',
-    done: false,
+    done: true,
     items: [
-      { label: 'Cross-device testing', done: false },
-      { label: 'All links & booking buttons verified', done: false },
-      { label: 'No console errors or horizontal overflow', done: false },
-      { label: 'Final client review complete', done: false },
+      { label: 'Cross-device testing', done: true },
+      { label: 'All links & booking buttons verified', done: true },
+      { label: 'No console errors or horizontal overflow', done: true },
+      { label: 'Final client review complete', done: true },
     ],
   },
 ]

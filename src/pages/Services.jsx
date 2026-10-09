@@ -13,11 +13,11 @@ import {
   Search01Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
-import { serviceCategories } from "../../data/services";
-import { BOOKING_URL } from "../../constants/config";
-import ReplicaBanner from "./ReplicaBanner";
+import { serviceCategories } from "../data/services";
+import { BOOKING_URL } from "../constants/config";
+import Banner from "../components/sections/Banner";
 import { useLocation } from "react-router-dom";
-import { usePageEnterDelay } from "./PageTransition";
+import { usePageEnterDelay } from "../components/common/PageTransition";
 
 // Map category IDs to icons
 const categoryIcons = {
@@ -84,7 +84,7 @@ function CategoryGrid({ activeId, onSelect, idPrefix, reduce }) {
   );
 }
 
-export default function ReplicaServices() {
+export default function Services() {
   // A card on Home can open this page with its category already selected
   const location = useLocation();
   const startCategory = serviceCategories.find((c) => c.id === location.state?.category)?.id;
@@ -111,7 +111,7 @@ export default function ReplicaServices() {
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(check);
     };
-    check();
+    frame = requestAnimationFrame(check);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
@@ -121,10 +121,9 @@ export default function ReplicaServices() {
     };
   }, []);
 
-  // Close the sheet when the inline grid is back on screen, or on Escape
-  useEffect(() => {
-    if (!pastGrid) setSheetOpen(false);
-  }, [pastGrid]);
+  // Close the sheet when the inline grid is back on screen (adjusting state during render,
+  // so there's no extra effect-triggered render), or on Escape
+  if (!pastGrid && sheetOpen) setSheetOpen(false);
   useEffect(() => {
     if (!sheetOpen) return;
     const onKey = (e) => e.key === "Escape" && setSheetOpen(false);
@@ -260,7 +259,7 @@ export default function ReplicaServices() {
             <motion.div variants={bentoCard} className="md:row-span-2 flex flex-col overflow-hidden rounded-[20px] sm:rounded-[24px] bg-[#F3EDE3] p-3 sm:p-4">
               <div className="relative rounded-[14px] sm:rounded-[18px] bg-white overflow-hidden h-[170px] md:h-auto md:flex-1 md:min-h-0">
                 <motion.span variants={bentoImage} className="absolute inset-0 block">
-                  <img src="/images/replica/service-gallery-1.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center" loading="lazy" />
+                  <img src="/images/media/service-gallery-1.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center" loading="lazy" />
                 </motion.span>
               </div>
               <motion.div variants={bentoText} className="pt-3">
@@ -296,7 +295,7 @@ export default function ReplicaServices() {
               className="group relative block overflow-hidden rounded-[20px] sm:rounded-[24px] bg-[#F3EDE3] h-[190px] md:h-auto text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#566B3F]"
             >
               <motion.span variants={bentoImage} className="absolute inset-0 block">
-                  <img src="/images/replica/service-gallery-2.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" />
+                  <img src="/images/media/service-gallery-2.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" />
                 </motion.span>
               <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
               <motion.span variants={bentoText} className="absolute inset-x-0 bottom-0 block p-3 sm:p-4">
@@ -328,12 +327,12 @@ export default function ReplicaServices() {
                   Facial Services
                 </span>
                 <span className="block text-[11.5px] sm:text-[11.5px] lg:text-[12px] leading-relaxed font-light text-[#4A524C]">
-                  Nourish, restore, reveal your natural glow.
+                  Nourish, reveal, reveal your natural glow.
                 </span>
               </motion.span>
               <span className="relative block w-[42%] overflow-hidden">
                 <motion.span variants={bentoImage} className="absolute inset-0 block">
-                  <img src="/images/replica/service-gallery-3.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" />
+                  <img src="/images/media/service-gallery-3.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" />
                 </motion.span>
               </span>
             </motion.button>
@@ -359,7 +358,7 @@ export default function ReplicaServices() {
               </motion.span>
               <span className="relative block w-[42%] overflow-hidden">
                 <motion.span variants={bentoImage} className="absolute inset-0 block">
-                  <img src="/images/replica/body.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" />
+                  <img src="/images/media/body.webp" alt="" className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" />
                 </motion.span>
               </span>
             </motion.button>
@@ -672,7 +671,7 @@ export default function ReplicaServices() {
 
       {/* ── Reuse the shared Banner at the bottom ─────────────────────── */}
       <motion.div {...blockReveal}>
-        <ReplicaBanner />
+        <Banner />
       </motion.div>
     </div>
   );

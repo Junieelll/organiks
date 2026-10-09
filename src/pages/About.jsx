@@ -7,8 +7,8 @@ import {
 } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarAdd02Icon } from "@hugeicons/core-free-icons";
-import { BOOKING_URL } from "../../constants/config";
-import { usePageEnterDelay } from "./PageTransition";
+import { BOOKING_URL } from "../constants/config";
+import { usePageEnterDelay } from "../components/common/PageTransition";
 
 /* ------------------------------------------------------------------ */
 /* Images: the exact files used on organikssalonandwellnessspa.com.    */
@@ -163,7 +163,7 @@ function BookButton() {
 const EYEBROW =
   "text-xs tracking-[3px] uppercase font-semibold mb-3";
 
-export default function ReplicaAbout() {
+export default function About() {
   const reduceMotion = useReducedMotion();
   const enterDelay = usePageEnterDelay(); // wait for the page curtain when arriving via nav
 

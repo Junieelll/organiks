@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -12,7 +13,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
  * Usage:
  *   <BrowserRouter>
  *     <PageTransitionProvider>
- *       <ReplicaHeader />
+ *       <Header />
  *       <Routes>…</Routes>
  *     </PageTransitionProvider>
  *   </BrowserRouter>
@@ -66,7 +67,9 @@ export function PageTransitionProvider({ children }) {
   const busy = useRef(false)
   const transitioning = useRef(0) // seconds a new page should delay its entrance (0 = none)
   const pathRef = useRef(location.pathname)
-  pathRef.current = location.pathname
+  useEffect(() => {
+    pathRef.current = location.pathname
+  }, [location.pathname])
 
   const go = useCallback(
     async (to, { anchor, state } = {}) => {
@@ -148,7 +151,10 @@ export function PageTransitionProvider({ children }) {
     [go, labelControls, navigate, reduce, revealControls]
   )
 
-  const value = useMemo(() => ({ go, goReveal, transitioning }), [go, goReveal])
+  const value = useMemo(
+    () => ({ go, goReveal, transitioning, getEnterDelay: () => transitioning.current }),
+    [go, goReveal]
+  )
 
   return (
     <PageTransitionContext.Provider value={value}>
@@ -217,7 +223,6 @@ export function usePageTransition() {
  */
 export function usePageEnterDelay() {
   const ctx = useContext(PageTransitionContext)
-  const ref = useRef(null)
-  if (ref.current === null) ref.current = ctx?.transitioning.current || 0
-  return ref.current
+  const [delay] = useState(() => ctx?.getEnterDelay() || 0)
+  return delay
 }

@@ -91,7 +91,7 @@ function ReviewAvatar({ review, size = "md" }) {
   );
 }
 
-export default function ReplicaReviews() {
+export default function Reviews() {
   const reduceMotion = useReducedMotion();
   const carouselRef = useRef(null);
   const swipeStartX = useRef(null);

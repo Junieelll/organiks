@@ -7,8 +7,8 @@ import {
   Home09Icon,
   PhoneIcon,
 } from "@hugeicons/core-free-icons";
-import { BOOKING_URL, SITE_INFO } from "../../constants/config";
-import { usePageEnterDelay } from "./PageTransition";
+import { BOOKING_URL, SITE_INFO } from "../constants/config";
+import { usePageEnterDelay } from "../components/common/PageTransition";
 
 /* ------------------------------------------------------------------ */
 /* Content: taken as-is from organikssalonandwellnessspa.com/thank-you */
@@ -333,7 +333,7 @@ function MapCard() {
   );
 }
 
-export default function ReplicaLocation() {
+export default function Location() {
   const reduceMotion = useReducedMotion();
   const enterDelay = usePageEnterDelay(); // wait for the page curtain when arriving via nav
 

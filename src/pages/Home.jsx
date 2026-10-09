@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { BOOKING_URL } from "../../constants/config";
-import { serviceCategories } from "../../data/services";
-import ReplicaBanner from "./ReplicaBanner";
-import ReplicaReviews from "./ReplicaReviews";
-import { usePageTransition, usePageEnterDelay } from "./PageTransition";
+import { BOOKING_URL } from "../constants/config";
+import { serviceCategories } from "../data/services";
+import Banner from "../components/sections/Banner";
+import Reviews from "../components/sections/Reviews";
+import { usePageTransition, usePageEnterDelay } from "../components/common/PageTransition";
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   CalendarAdd02Icon,
@@ -50,7 +50,7 @@ function RevealWords({ text }) {
     <span
       key={i}
       aria-hidden="true"
-      className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em] mr-[0.26em] last:mr-0"
+      className="inline-block overflow-hidden align-bottom pb-[0.12em] mb-[-0.12em] mr-[0.26em] last:mr-0"
     >
       <motion.span className="inline-block" variants={wordVariants}>
         {word}
@@ -138,7 +138,7 @@ const serviceContentVariants = {
   }),
 };
 
-export default function ReplicaHome() {
+export default function Home() {
   const { goReveal } = usePageTransition();
   const enterDelay = usePageEnterDelay(); // hero waits for the page curtain when arriving via nav
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
@@ -250,13 +250,13 @@ export default function ReplicaHome() {
       {/* 1. Hero Section — Full Screen Modern Sanctuary Layout */}
       <section
         id="home"
-        className="relative min-h-[100dvh] flex items-center overflow-hidden text-[#FBF4E4] bg-[#14291F]"
+        className="relative min-h-dvh flex items-center overflow-hidden text-[#FBF4E4] bg-[#14291F]"
       >
         {/* Exact First-Frame Poster (renders immediately while video buffers, zero pop) */}
         <picture>
-          <source srcSet="/images/replica/hero-poster.webp" type="image/webp" />
+          <source srcSet="/images/media/hero-poster.webp" type="image/webp" />
           <img
-            src="/images/replica/hero-poster.jpg"
+            src="/images/media/hero-poster.jpg"
             alt="Organiks Aesthetic Sanctuary"
             className="absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none select-none"
             loading="eager"
@@ -278,15 +278,15 @@ export default function ReplicaHome() {
             isVideoLoaded ? "opacity-100" : "opacity-0"
           }`}
         >
-          <source src="/images/replica/hero.mp4" type="video/mp4" />
+          <source src="/images/media/hero.mp4" type="video/mp4" />
         </video>
 
         {/* Ambient Gradient Overlays: Rich bottom fade on mobile, side-by-side on desktop */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 via-40% to-transparent lg:bg-gradient-to-r lg:from-black/90 lg:via-black/60 lg:to-black/35 pointer-events-none" />
-        <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/70 via-40% to-transparent lg:bg-linear-to-r lg:from-black/90 lg:via-black/60 lg:to-black/35 pointer-events-none" />
+        <div className="hidden lg:block absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/50 pointer-events-none" />
 
         {/* Content Container: Docked to bottom on mobile, balanced on desktop */}
-        <div className="relative z-10 w-full max-w-[1280px] mx-auto px-5 sm:px-8 pt-16 pb-4 sm:pt-28 sm:pb-12 flex flex-col justify-end lg:justify-between min-h-[100dvh]">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-16 pb-4 sm:pt-28 sm:pb-12 flex flex-col justify-end lg:justify-between min-h-dvh">
           {/* Main Content: Bottom-docked on mobile, vertically centered on desktop */}
           <div className="flex items-end lg:items-center w-full my-0 lg:my-auto pb-1 sm:pb-4 lg:py-8">
             <div className="text-left max-w-2xl w-full">
@@ -309,7 +309,7 @@ export default function ReplicaHome() {
                 className="text-[clamp(25px,6.8vw,64px)] leading-[1.12] text-white font-normal tracking-tight m-0"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                Natural Luxury <span className="italic text-[#E8DDD2] font-serif font-light">for</span>
+                Natural Luxury <span className="italic text-brand-accent font-serif font-light">for</span>
                 <br />
                 Your Total Renewal
               </motion.h1>
@@ -319,7 +319,7 @@ export default function ReplicaHome() {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.3 + enterDelay }}
-                className="max-w-[560px] text-[12px] sm:text-[14.5px] text-[#FBF4E4]/90 leading-relaxed mt-2.5 sm:mt-5 mb-4 sm:mb-8 line-clamp-2 sm:line-clamp-none"
+                className="max-w-140 text-[12px] sm:text-[14.5px] text-[#FBF4E4]/90 leading-relaxed mt-2.5 sm:mt-5 mb-4 sm:mb-8 line-clamp-2 sm:line-clamp-none"
               >
                 A 2-floor luxury destination blending organic-inspired rituals with advanced clinical care — designed for master hair styling, medical skin rejuvenation, ancient wellness therapies, and aesthetic renewal.
               </motion.p>
@@ -373,7 +373,7 @@ export default function ReplicaHome() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.6 + enterDelay }}
-                className="grid grid-cols-3 gap-2 sm:gap-6 pt-3 sm:pt-6 border-t border-white/15 max-w-[560px]"
+                className="grid grid-cols-3 gap-2 sm:gap-6 pt-3 sm:pt-6 border-t border-white/15 max-w-140"
               >
                 <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-[#E8DCC2] shrink-0">
@@ -423,7 +423,7 @@ export default function ReplicaHome() {
           {/* Bottom subtle indicator */}
           <div className="pt-2 sm:pt-6 flex items-center justify-between text-[10px] sm:text-[11px] text-white/50 border-t border-white/10">
             <span className="flex items-center gap-2">
-              <span className="w-3.5 h-[1px] bg-white/40" />
+              <span className="w-3.5 h-px bg-white/40" />
               Friendship Highway, Angeles City • Open Daily
             </span>
           </div>
@@ -432,7 +432,7 @@ export default function ReplicaHome() {
 
       {/* 2. Intro Section — the photo is unveiled first, then the copy follows */}
       <section id="about" className="py-14 sm:py-20 bg-[#FEFBF7]">
-        <div className="max-w-[1140px] mx-auto px-6">
+        <div className="max-w-285 mx-auto px-6">
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center"
             initial={reduceMotion ? false : "hidden"}
@@ -442,7 +442,7 @@ export default function ReplicaHome() {
             {/* Text Column */}
             <motion.div
               variants={introTextVariants}
-              className="text-center max-w-[440px] mx-auto"
+              className="text-center max-w-110 mx-auto"
             >
               <motion.div variants={fadeVariants} className="mb-7 flex justify-center">
                 <img
@@ -491,19 +491,19 @@ export default function ReplicaHome() {
             <motion.div
               ref={introPhotoRef}
               variants={introFrameVariants}
-              className="relative w-full max-w-[430px] mx-auto aspect-[3/4] rounded-lg shadow-md bg-[#E6D9C2]"
+              className="relative w-full max-w-107.5 mx-auto aspect-3/4 rounded-lg shadow-md bg-[#E6D9C2]"
             >
               <motion.div
                 variants={curtainVariants}
                 className="absolute inset-0 overflow-hidden rounded-lg"
               >
                 <motion.div
-                  className="absolute inset-x-0 -top-[8%] -bottom-[8%]"
+                  className="absolute inset-x-0 top-[-8%] bottom-[-8%]"
                   style={{ y: introPhotoY }}
                 >
                   <motion.div className="w-full h-full" variants={settleVariants}>
                     <img
-                      src="/images/replica/intro.webp"
+                      src="/images/media/intro.webp"
                       alt="Guests enjoying wellness at Organiks Salon and Wellness Spa"
                       className="w-full h-full object-cover"
                       loading="lazy"
@@ -518,7 +518,7 @@ export default function ReplicaHome() {
 
       {/* 3. Pillars Section — each gold ring draws itself, then the icon settles inside */}
       <section className="py-14 sm:py-20 text-center bg-[#FEFBF7] border-t border-[#F4EEE3]">
-        <div className="max-w-[1140px] mx-auto px-6">
+        <div className="max-w-285 mx-auto px-6">
           <motion.h2
             initial={reduceMotion ? false : { opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -538,15 +538,15 @@ export default function ReplicaHome() {
             viewport={{ once: true, amount: 0.3 }}
           >
             {[
-              { title: "Premium Care", image: "/images/replica/icon1.webp" },
-              { title: "Expert Team", image: "/images/replica/icon2.webp" },
+              { title: "Premium Care", image: "/images/media/icon1.webp" },
+              { title: "Expert Team", image: "/images/media/icon2.webp" },
               {
                 title: "Advanced Technology",
-                image: "/images/replica/icon3.webp",
+                image: "/images/media/icon3.webp",
               },
               {
                 title: "Luxurious Environment",
-                image: "/images/replica/icon4.webp",
+                image: "/images/media/icon4.webp",
               },
             ].map((pillar, idx) => (
               <motion.div
@@ -555,7 +555,7 @@ export default function ReplicaHome() {
                 className="flex flex-col items-center cursor-default"
               >
                 <motion.div
-                  className="relative w-[140px] h-[140px] sm:w-[170px] sm:h-[170px] mb-4 rounded-full overflow-hidden bg-white p-1.5"
+                  className="relative w-35 h-35 sm:w-42.5 sm:h-42.5 mb-4 rounded-full overflow-hidden bg-white p-1.5"
                   style={{ boxShadow: "0 2px 8px rgba(184, 151, 90, 0.1)" }}
                   whileHover={{
                     scale: 1.08,
@@ -604,7 +604,7 @@ export default function ReplicaHome() {
         id="services"
         className="py-16 sm:py-20 bg-[#FEFBF7] text-center border-t border-[#F4EEE3]"
       >
-        <div className="max-w-[1140px] mx-auto px-6">
+        <div className="max-w-285 mx-auto px-6">
           <motion.div
             variants={servicesHeaderVariants}
             initial={reduceMotion ? false : "hidden"}
@@ -631,7 +631,7 @@ export default function ReplicaHome() {
             </motion.p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1080px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-270 mx-auto">
             {servicesList.map((service, i) => (
               <motion.article
                 key={service.id}
@@ -645,7 +645,7 @@ export default function ReplicaHome() {
                   boxShadow: "0 20px 56px rgba(44,39,35,0.18)",
                   transition: { type: "spring", stiffness: 320, damping: 22 },
                 }}
-                className="group relative overflow-hidden rounded-[20px] cursor-pointer aspect-[4/5.4] min-h-[430px] sm:min-h-[460px] text-left"
+                className="group relative overflow-hidden rounded-[20px] cursor-pointer aspect-[4/5.4] min-h-107.5 sm:min-h-115 text-left"
                 style={{ boxShadow: "0 6px 24px rgba(0,0,0,0.12)" }}
                 onClick={(e) => openCategoryPage(e, service)}
               >
@@ -670,7 +670,7 @@ export default function ReplicaHome() {
                   </motion.div>
 
                   {/* Scrim: Lowered so top ~76% of the image is completely unobscured */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 via-5% to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/75 via-5% to-transparent pointer-events-none" />
 
                   {/* Category Pill — top-left */}
                   <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md shadow-sm border border-white/10">
@@ -728,10 +728,10 @@ export default function ReplicaHome() {
       </section>
 
       {/* 5. Banner Section */}
-      <ReplicaBanner />
+      <Banner />
 
       {/* 6. Client Reviews */}
-      <ReplicaReviews />
+      <Reviews />
 
     </div>
   );
